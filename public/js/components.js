@@ -1,0 +1,10 @@
+/* Komponen bersama: navbar, footer, form, ringkasan pesanan */
+const nav = a => `<nav><a href="#/">${BR(42)}</a>${[["Beranda", "/"], ["Layanan", "/booking"], ["Riwayat Pesanan", "/riwayat"], ["Kendaraan", "/booking"], ["Rewards", "/rewards"], ["Bantuan", "/profil"]].map(l => `<a class="${a === l[0] ? "on" : ""}" href="#${l[1]}">${l[0]}</a>`).join("")}<a class="us" href="#/profil"><span>Andi Pratama<small>Gold Tier</small></span><i>${ICON_USER}</i></a></nav>`;
+const ft = `<div class="ft">© 2025 OtoCare Indonesia. Layanan Perawatan Kendaraan Presisi.</div>`;
+const qr = z => `<svg width="${z}" height="${z}" viewBox="0 0 9 9"><rect width="9" height="9" fill="#fff"/><path d="M0 0h3v3H0zM6 0h3v3H6zM0 6h3v3H0zM4 4h1v1H4zM6 5h3v1H6zM5 7h2v2H5zM3 3h1v2H3zM8 7h1v2H8z" fill="#000C33"/><path d="M1 1h1v1H1zM7 1h1v1H7zM1 7h1v1H1z" fill="#fff"/></svg>`;
+const auth = c => `<div class="auth"><div class="ap"><b>OTOCARE •</b><span>Cuci kendaraan tanpa antre.</span></div><div class="af"><div class="cd">${c}<p class="c sm mu sp">© 2024 OtoCare Indonesia</p></div></div></div>`;
+const f = (l, p, t) => `<label>${l}</label><input type="${t || "text"}" placeholder="${p}">`;
+const sum = () => `<div class="cd"><div class="row"><h3>Ringkasan Pesanan</h3><span class="pill">Langkah ${step}</span></div><div class="pn mb"><span class="sm mu">KENDARAAN</span><br><b>${VEH[S.v][0]}</b><br><span class="sm mu">${VEH[S.v][1]}</span></div>${step > 1 ? `<div class="row"><span>${SV[S.s][0]}</span><b>${rp(SV[S.s][1])}</b></div>${S.ad.map(i => `<div class="row sm"><span>${AD[i][0]}</span><span>${rp(AD[i][1])}</span></div>`).join("")}` : `<div class="row mu"><span>Layanan</span><i>Belum dipilih</i></div>`}${step > 2 ? `<div class="row"><span>Jadwal</span><b>${DAYS[S.d][1]} Okt • ${S.t.replace(".", ":")}</b></div>` : ""}${step > 3 ? `<div class="row"><span>Pengambilan</span><b>${S.p ? "Diantar Valet" : "Ambil Sendiri"}</b></div>` : ""}<div class="row"><span>Total Sementara</span><h2>${step > 1 ? rp(tot()) : "Rp0"}</h2></div></div>`;
+
+// Objek halaman; diisi oleh file di js/pages/
+const pages = {};
