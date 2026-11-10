@@ -85,6 +85,7 @@ new class extends Component
 ?>
 
 <div>
+    /** upper page
     <nav>
         <a href="#/" class="brand">OtoCare</a>
 
@@ -102,6 +103,8 @@ new class extends Component
         </a>
     </nav>
 
+
+    /** main body 
     <div class="w">
 
         {{-- HERO SECTION --}}
