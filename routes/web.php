@@ -16,7 +16,7 @@ Route::livewire('/auth', 'pages.auth')
 Route::livewire('/booking', 'pages.booking')
     ->name('booking');
 
-Route::livewire('/', 'pages.landing')
+Route::livewire('/landing', 'pages.landing')
     ->name('landing');
 
 Route::livewire('/orders', 'pages.orders')
