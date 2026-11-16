@@ -11,7 +11,7 @@
 }
 
 /* ==============================
-   OTOCARE LANDING PAGE
+   GLOBAL
 ============================== */
 
 :root {
@@ -42,9 +42,12 @@ a {
     color: inherit;
 }
 
-/* NAVBAR */
+/* ==============================
+   LANDING PAGE NAVBAR
+   Hanya berlaku pada .landing-page
+============================== */
 
-nav {
+.landing-page nav {
     width: 100%;
     min-height: 76px;
     padding: 12px 7%;
@@ -58,24 +61,26 @@ nav {
     z-index: 100;
 }
 
-nav>a {
+.landing-page nav > a {
     font-size: 14px;
     font-weight: 600;
     transition: .2s;
 }
 
-nav>a:hover {
+.landing-page nav > a:hover {
     color: var(--primary);
 }
 
-nav .brand {
+.landing-page nav .brand {
     font-size: 24px;
     font-weight: 800;
     color: var(--nv);
     margin-right: 20px;
 }
 
-/* CONTAINER */
+/* ==============================
+   CONTAINER
+============================== */
 
 .w {
     width: 86%;
@@ -112,7 +117,9 @@ nav .brand {
     margin-bottom: 30px;
 }
 
-/* HERO */
+/* ==============================
+   HERO
+============================== */
 
 .hero {
     display: grid;
@@ -147,7 +154,9 @@ nav .brand {
     font-weight: 700;
 }
 
-/* BUTTON */
+/* ==============================
+   BUTTON
+============================== */
 
 .btn {
     display: inline-flex;
@@ -194,7 +203,9 @@ nav .brand {
     flex-wrap: wrap;
 }
 
-/* BADGE */
+/* ==============================
+   BADGE
+============================== */
 
 .pill {
     display: inline-flex;
@@ -210,7 +221,9 @@ nav .brand {
     color: var(--primary);
 }
 
-/* GRID */
+/* ==============================
+   GRID
+============================== */
 
 .g3 {
     display: grid;
@@ -224,7 +237,9 @@ nav .brand {
     gap: 20px;
 }
 
-/* CARD */
+/* ==============================
+   CARD
+============================== */
 
 .cd {
     padding: 25px;
@@ -261,9 +276,11 @@ nav .brand {
     margin-top: auto;
 }
 
-/* FAQ */
+/* ==============================
+   FAQ
+============================== */
 
-details {
+.landing-page details {
     padding: 20px 24px;
     margin-bottom: 12px;
     border: 1px solid var(--border);
@@ -272,17 +289,19 @@ details {
     background: white;
 }
 
-details summary {
+.landing-page details summary {
     font-weight: 700;
     color: var(--nv);
 }
 
-details p {
+.landing-page details p {
     color: var(--muted);
     margin-bottom: 0;
 }
 
-/* USER ICON */
+/* ==============================
+   USER ICON
+============================== */
 
 .us {
     display: inline-flex;
@@ -290,10 +309,12 @@ details p {
     justify-content: center;
 }
 
-/* RESPONSIVE */
+/* ==============================
+   RESPONSIVE
+============================== */
 
 @media (max-width: 900px) {
-    nav {
+    .landing-page nav {
         gap: 15px;
         padding: 12px 4%;
         flex-wrap: wrap;
@@ -314,11 +335,11 @@ details p {
 }
 
 @media (max-width: 600px) {
-    nav {
+    .landing-page nav {
         gap: 12px;
     }
 
-    nav>a {
+    .landing-page nav > a {
         font-size: 12px;
     }
 

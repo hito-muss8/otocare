@@ -1,139 +1,147 @@
+
 <?php
 
 use Livewire\Component;
+use Illuminate\Support\Facades\DB;
 
 new class extends Component
 {
-    // Dummy Data Orders (Frontend Only)
-    public array $orders = [
-        [
-            'id' => 'OTC-8821',
-            'service_name' => 'Cuci Komplit + Hydrophobic Wax',
-            'vehicle' => 'Honda Vario 160 (AB 1234 XX)',
-            'date' => '10 Nov 2026 - 14:00 WIB',
-            'type' => 'Valet (Jemput-Antar)',
-            'price' => 50000,
-            'status' => 'Proses Cuci',
-            'badge' => 'bg-amber-50 text-amber-800 border-amber-200',
-        ],
-        [
-            'id' => 'OTC-8790',
-            'service_name' => 'Signature Full Detailing',
-            'vehicle' => 'Toyota Avanza (AB 5678 YY)',
-            'date' => '05 Nov 2026 - 09:00 WIB',
-            'type' => 'Datang Langsung',
-            'price' => 250000,
-            'status' => 'Selesai',
-            'badge' => 'bg-emerald-50 text-emerald-800 border-emerald-200',
-        ],
-        [
-            'id' => 'OTC-8512',
-            'service_name' => 'Deep Interior Cleansing',
-            'vehicle' => 'Honda Vario 160 (AB 1234 XX)',
-            'date' => '28 Okt 2026 - 11:00 WIB',
-            'type' => 'Datang Langsung',
-            'price' => 120000,
-            'status' => 'Selesai',
-            'badge' => 'bg-emerald-50 text-emerald-800 border-emerald-200',
-        ]
-    ];
+    public $orders = [];
 
-    public function rupiah(int $price): string
+    public function mount(): void
     {
-        return 'Rp ' . number_format($price, 0, ',', '.');
+        $customerId = session('current_customer_id');
+
+        if (!$customerId) {
+            $this->orders = [];
+            return;
+        }
+
+        $this->orders = DB::table('bookings')
+            ->join('customers', 'bookings.customer_id', '=', 'customers.id')
+            ->join('vehicles', 'bookings.vehicle_id', '=', 'vehicles.id')
+            ->join('services', 'bookings.service_id', '=', 'services.id')
+            ->leftJoin('payments', 'bookings.id', '=', 'payments.booking_id')
+            ->where('bookings.customer_id', $customerId)
+            ->select(
+                'bookings.id',
+                'bookings.booking_date',
+                'bookings.booking_time',
+                'bookings.status as booking_status',
+                'services.name as service_name',
+                'services.price',
+                'vehicles.vehicle_type',
+                'vehicles.vehicle_model',
+                'vehicles.plate_number',
+                'payments.method as payment_method',
+                'payments.status as payment_status'
+            )
+            ->orderByDesc('bookings.id')
+            ->get();
+    }
+
+    public function rupiah($price): string
+    {
+        return 'Rp ' . number_format((float) $price, 0, ',', '.');
     }
 };
 ?>
 
-<div class="min-h-screen bg-slate-50/50 text-slate-800 font-sans antialiased pb-20">
-
-    {{-- HEADER --}}
-    <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="{{ route('landing') }}" class="text-2xl font-extrabold tracking-tight text-slate-900">
+<div class="min-h-screen bg-slate-50 text-slate-800">
+    <header class="bg-white border-b border-slate-200">
+        <div class="max-w-5xl mx-auto px-5 py-4 flex justify-between items-center">
+            <a href="{{ route('landing') }}" class="text-2xl font-extrabold text-slate-900">
                 Oto<span class="text-blue-800">Care.</span>
             </a>
-            <div class="flex items-center gap-4">
-                <a href="{{ route('booking') }}" class="text-sm font-bold text-blue-800 hover:text-slate-900 transition">
-                    + Booking Baru
-                </a>
-                <a href="{{ route('account') }}" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200/60 flex items-center justify-center text-slate-800 font-bold transition">
-                    👤
-                </a>
-            </div>
+            <a href="{{ route('booking') }}"
+            class="bg-blue-900 !text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700">
+                + Booking Baru
+            </a>
         </div>
     </header>
 
-    {{-- KONTEN UTAMA ORDERS --}}
-    <main class="max-w-4xl mx-auto px-6 py-10">
+    <main class="max-w-4xl mx-auto px-5 py-10">
+        <p class="text-xs font-bold uppercase tracking-widest text-blue-800">Riwayat Reservasi</p>
+        <h1 class="text-3xl font-extrabold mt-2">Pesanan Saya</h1>
+        <p class="text-slate-500 text-sm mt-2 mb-8">
+            Daftar reservasi yang telah kamu buat.
+        </p>
 
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-            <div>
-                <span class="text-xs font-bold tracking-widest text-blue-800 uppercase bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-                    Riwayat Reservasi
-                </span>
-                <h1 class="text-3xl font-extrabold text-slate-900 mt-3">Pesanan Saya</h1>
-                <p class="text-slate-500 text-sm mt-1">Pantau status pengerjaan cuci dan riwayat reservasi Anda.</p>
+        @if (session()->has('success'))
+            <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-4 mb-6 text-sm">
+                {{ session('success') }}
             </div>
-        </div>
+        @endif
 
-        {{-- DAFTAR KARTU PESANAN --}}
-        <div class="space-y-6">
+        <div class="space-y-5">
             @forelse ($orders as $order)
-                <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs hover:shadow-md transition">
-                    
-                    {{-- TOP CARD INFO --}}
-                    <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <article class="bg-white border border-slate-200 rounded-2xl p-6">
+                    <div class="flex flex-col sm:flex-row justify-between gap-3 border-b pb-4">
                         <div>
-                            <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">NO. RESERVASI</span>
-                            <h3 class="text-base font-extrabold text-slate-900">{{ $order['id'] }}</h3>
+                            <p class="text-xs text-slate-400 font-semibold">NOMOR BOOKING</p>
+                            <h2 class="text-xl font-extrabold mt-1">#{{ $order->id }}</h2>
                         </div>
 
-                        <div class="flex items-center gap-2">
-                            <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $order['badge'] }}">
-                                ● {{ $order['status'] }}
-                            </span>
-                        </div>
+                        <span class="text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-4 py-2 h-fit">
+                            {{ $order->booking_status }}
+                        </span>
                     </div>
 
-                    {{-- DETAIL ORDERS --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 py-5">
+                    <div class="grid sm:grid-cols-2 gap-5 py-5">
                         <div>
-                            <p class="text-xs font-semibold text-slate-400">Paket Layanan</p>
-                            <p class="text-sm font-bold text-slate-900 mt-1">{{ $order['service_name'] }}</p>
-                            <span class="inline-block mt-2 px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-xs font-semibold">
-                                {{ $order['type'] }}
-                            </span>
+                            <p class="text-xs text-slate-400">Layanan</p>
+                            <p class="font-bold mt-1">{{ $order->service_name }}</p>
+
+                            <p class="text-xs text-slate-400 mt-4">Kendaraan</p>
+                            <p class="font-semibold mt-1">
+                                {{ $order->vehicle_model }} ({{ $order->vehicle_type }})
+                            </p>
+                            <p class="text-sm text-slate-500">{{ $order->plate_number }}</p>
                         </div>
 
                         <div>
-                            <p class="text-xs font-semibold text-slate-400">Kendaraan & Waktu</p>
-                            <p class="text-sm font-bold text-slate-700 mt-1">{{ $order['vehicle'] }}</p>
-                            <p class="text-xs text-slate-500 mt-1">🕒 {{ $order['date'] }}</p>
-                        </div>
+                            <p class="text-xs text-slate-400">Jadwal Reservasi</p>
+                            <p class="font-semibold mt-1">{{ $order->booking_date }}</p>
+                            <p class="text-sm text-slate-500">
+                                {{ substr($order->booking_time, 0, 5) }} WIB
+                            </p>
 
-                        <div class="sm:text-right">
-                            <p class="text-xs font-semibold text-slate-400">Total Pembayaran</p>
-                            <p class="text-lg font-extrabold text-blue-800 mt-1">{{ $this->rupiah($order['price']) }}</p>
+                            <p class="text-xs text-slate-400 mt-4">Metode Pembayaran</p>
+                            <p class="font-semibold mt-1">
+                                {{ $order->payment_method ?? 'Belum Dipilih' }}
+                            </p>
                         </div>
                     </div>
 
-                    {{-- FOOTER CARD --}}
-                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <span class="text-xs text-slate-400">Diperbarui secara real-time oleh teknisi</span>
-                        <a href="{{ route('payment') }}" class="px-4 py-2 border border-slate-200 hover:border-blue-800 hover:text-blue-800 rounded-xl text-xs font-bold text-slate-700 transition">
-                            Detail Pengerjaan →
-                        </a>
-                    </div>
+                    <div class="border-t pt-4 flex flex-col sm:flex-row justify-between gap-3">
+                        <div>
+                            <p class="text-xs text-slate-400">Total Pembayaran</p>
+                            <p class="text-xl font-extrabold text-blue-900 mt-1">
+                                {{ $this->rupiah($order->price) }}
+                            </p>
+                        </div>
 
-                </div>
+                        <div class="text-sm sm:text-right">
+                            <p class="text-xs text-slate-400">Status Pembayaran</p>
+                            <p class="font-bold mt-1">
+                                {{ $order->payment_status ?? 'Belum Ada Pembayaran' }}
+                            </p>
+                        </div>
+                    </div>
+                </article>
             @empty
-                <div class="bg-white border border-slate-200/80 rounded-2xl p-12 text-center">
-                    <p class="text-slate-500 font-semibold text-sm">Belum ada riwayat pesanan.</p>
+                <div class="bg-white border border-slate-200 rounded-2xl p-10 text-center">
+                    <div class="text-4xl mb-4">📋</div>
+                    <h2 class="font-bold text-lg">Belum Ada Pesanan</h2>
+                    <p class="text-sm text-slate-500 mt-2">
+                        Pesanan yang kamu buat akan muncul di halaman ini.
+                    </p>
+                    <a href="{{ route('booking') }}"
+                        class="inline-block mt-5 bg-blue-800 text-white px-5 py-3 rounded-xl text-sm font-bold">
+                        Buat Booking
+                    </a>
                 </div>
             @endforelse
         </div>
-
     </main>
-
 </div>
