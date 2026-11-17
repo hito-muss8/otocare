@@ -11,7 +11,9 @@ Route::livewire('/booking', 'pages.booking')
     ->middleware('auth')
     ->name('booking');
 Route::livewire('/landing', 'pages.landing')->name('landing');
-Route::livewire('/orders', 'pages.orders')->name('orders');
+Route::livewire('/orders', 'pages.orders')
+    ->middleware('auth')
+    ->name('orders');
 Route::livewire('/payment', 'pages.payment')->name('payment');
 
 Route::livewire('/app', 'app')->name('app');

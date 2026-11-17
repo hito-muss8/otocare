@@ -5,6 +5,11 @@ use Livewire\Component;
 
 new class extends Component
 {
+    public bool $showUserMenu = false;
+    public function toggleUserMenu(): void
+        {
+            $this->showUserMenu = ! $this->showUserMenu;
+        }
     public array $advantages = [
         [
             'title' => 'Bebas Antre',
@@ -161,6 +166,7 @@ new class extends Component
                     </a>
                 </nav>
 
+
                 {{-- NAVBAR ACTION --}}
                 <div class="flex items-center gap-3 shrink-0">
 
@@ -170,19 +176,89 @@ new class extends Component
                         <span>→</span>
                     </a>
 
-                    <a href="{{ route('auth') }}"
-                        aria-label="Masuk ke akun"
-                        class="w-11 h-11 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 hover:border-blue-200 text-slate-600 hover:text-blue-700 flex items-center justify-center transition">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            width="21" height="21" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="1.8"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="8" r="4"/>
-                            <path d="M5 21a7 7 0 0 1 14 0"/>
-                        </svg>
-                    </a>
-                </div>
+                    {{-- USER MENU --}}
+                    @auth
+                        <div class="relative">
 
+                            <button
+                                type="button"
+                                wire:click="toggleUserMenu"
+                                aria-label="Menu akun"
+                                aria-expanded="{{ $showUserMenu ? 'true' : 'false' }}"
+                                class="w-11 h-11 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 hover:border-blue-200 text-slate-600 hover:text-blue-700 flex items-center justify-center transition">
+
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    width="21" height="21" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="8" r="4"/>
+                                    <path d="M5 21a7 7 0 0 1 14 0"/>
+                                </svg>
+                            </button>
+
+                            {{-- DROPDOWN --}}
+                            @if ($showUserMenu)
+                                <div class="absolute right-0 top-full mt-3 w-60 bg-white border border-slate-200 rounded-2xl shadow-xl shadow-slate-200/60 overflow-hidden z-50">
+
+                                    <div class="px-4 py-4 border-b border-slate-100">
+                                        <p class="text-xs text-slate-400 font-medium">
+                                            Masuk sebagai
+                                        </p>
+
+                                        <p class="text-sm font-bold text-slate-800 mt-1 truncate">
+                                            {{ auth()->user()->name }}
+                                        </p>
+                                    </div>
+
+                                    <div class="p-2">
+
+                                        <a href="{{ route('orders') }}"
+                                            class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition">
+                                            Pesanan Saya
+                                        </a>
+
+                                        <a href="{{ route('account') }}"
+                                            class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition">
+                                            Akun Saya
+                                        </a>
+
+                                    </div>
+
+                                    <div class="border-t border-slate-100 p-2">
+                                        <form action="{{ route('logout') }}" method="POST">
+                                            @csrf
+
+                                            <button type="submit"
+                                                class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition">
+                                                Logout
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                </div>
+                            @endif
+
+                        </div>
+
+                    @else
+
+                        {{-- BELUM LOGIN --}}
+                        <a href="{{ route('auth') }}"
+                            aria-label="Masuk ke akun"
+                            class="w-11 h-11 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 hover:border-blue-200 text-slate-600 hover:text-blue-700 flex items-center justify-center transition">
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                width="21" height="21" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="4"/>
+                                <path d="M5 21a7 7 0 0 1 14 0"/>
+                            </svg>
+                        </a>
+
+                    @endauth
+
+                </div>
             </div>
         </div>
     </header>
